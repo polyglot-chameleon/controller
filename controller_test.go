@@ -7,18 +7,22 @@ import (
 	util "github.com/polyglot-chameleon/goutil"
 )
 
+var controller Controller
 var newPost Resource
 
 func init() {
 	util.LoadDotEnv(".env.test")
-	if err := Controller.Connect(); err != nil {
+
+	controller = Controller{}
+
+	if err := controller.Connect(); err != nil {
 		log.Fatal(err)
 	}
 	newPost = Resource{Title: "NewTestPostTitle", Body: "NewTestPostBody"}
 }
 
 func TestCreate(t *testing.T) {
-	res, err := Controller.Create(newPost)
+	res, err := controller.Create(newPost)
 
 	testError(err, t)
 
@@ -31,7 +35,7 @@ func TestCreate(t *testing.T) {
 	}
 
 	lastInsertId, _ := res.LastInsertId()
-	storedPost, err := Controller.Read(lastInsertId)
+	storedPost, err := controller.Read(lastInsertId)
 
 	testError(err, t)
 
@@ -43,14 +47,14 @@ func TestCreate(t *testing.T) {
 		t.Fatalf("%v != %v", storedPost.Body, newPost.Body)
 	}
 
-	Controller.Delete(lastInsertId)
+	controller.Delete(lastInsertId)
 }
 
 func TestRead(t *testing.T) {
-	res, _ := Controller.Create(newPost)
+	res, _ := controller.Create(newPost)
 	lastInsertId, _ := res.LastInsertId()
 
-	storedPost, err := Controller.Read(lastInsertId)
+	storedPost, err := controller.Read(lastInsertId)
 	testError(err, t)
 
 	if storedPost.Title != newPost.Title {
@@ -60,14 +64,14 @@ func TestRead(t *testing.T) {
 	if storedPost.Body != newPost.Body {
 		t.Fatalf("%v != %v", storedPost.Body, newPost.Body)
 	}
-	Controller.Delete(lastInsertId)
+	controller.Delete(lastInsertId)
 }
 
 func TestAll(t *testing.T) {
-	res, _ := Controller.Create(newPost)
+	res, _ := controller.Create(newPost)
 	lastInsertId, _ := res.LastInsertId()
 
-	storedPosts, err := Controller.All()
+	storedPosts, err := controller.All()
 	testError(err, t)
 
 	nPosts := len(storedPosts)
@@ -75,14 +79,14 @@ func TestAll(t *testing.T) {
 	if nPosts != 1 {
 		t.Fatalf("%v != 1", nPosts)
 	}
-	Controller.Delete(lastInsertId)
+	controller.Delete(lastInsertId)
 }
 
 func TestDelete(t *testing.T) {
-	res, _ := Controller.Create(newPost)
+	res, _ := controller.Create(newPost)
 	lastInsertId, _ := res.LastInsertId()
 
-	res, err := Controller.Delete(lastInsertId)
+	res, err := controller.Delete(lastInsertId)
 	testError(err, t)
 
 	nRowsAffected, err := res.RowsAffected()
@@ -93,7 +97,7 @@ func TestDelete(t *testing.T) {
 		t.Fatalf("RowsAffected: %v != 1", nRowsAffected)
 	}
 
-	storedPost, err := Controller.Read(lastInsertId)
+	storedPost, err := controller.Read(lastInsertId)
 	testError(err, t)
 
 	if storedPost.Title != "" {

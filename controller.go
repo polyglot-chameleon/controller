@@ -15,24 +15,18 @@ type Resource struct {
 	Body  string
 }
 
-type controller struct {
+type Controller struct {
 	db *sql.DB
 }
 
-var Controller *controller
-
-func init() {
-	Controller = &controller{}
-}
-
-func (mc *controller) Connect() error {
+func (mc *Controller) Connect() error {
 	var err error
-	Controller.db, err = sql.Open(os.Getenv("DB_DRIVER"), os.Getenv("DB_URL"))
+	mc.db, err = sql.Open(os.Getenv("DB_DRIVER"), os.Getenv("DB_URL"))
 	util.Check(err)
 	return err
 }
 
-func (mc *controller) Create(new Resource) (sql.Result, error) {
+func (mc *Controller) Create(new Resource) (sql.Result, error) {
 	result, err := mc.db.Exec(fmt.Sprintf("INSERT INTO posts(title, body) VALUES ('%s', '%s')", new.Title, new.Body))
 
 	util.Check(err)
@@ -45,7 +39,7 @@ func (mc *controller) Create(new Resource) (sql.Result, error) {
 	return result, err
 }
 
-func (mc *controller) Read(resourceID int64) (Resource, error) {
+func (mc *Controller) Read(resourceID int64) (Resource, error) {
 	rows, err := mc.db.Query(fmt.Sprintf("SELECT title, body FROM posts WHERE id = %v", resourceID))
 	util.Check(err)
 
@@ -60,7 +54,7 @@ func (mc *controller) Read(resourceID int64) (Resource, error) {
 	return post, err
 }
 
-func (mc *controller) All() ([]Resource, error) {
+func (mc *Controller) All() ([]Resource, error) {
 	rows, err := mc.db.Query("SELECT title, body FROM posts;")
 	util.Check(err)
 
@@ -79,7 +73,7 @@ func (mc *controller) All() ([]Resource, error) {
 	return stored, err
 }
 
-func (mc *controller) Delete(resourceId int64) (sql.Result, error) {
+func (mc *Controller) Delete(resourceId int64) (sql.Result, error) {
 	result, err := mc.db.Exec(fmt.Sprintf("DELETE FROM posts WHERE id = %v;", resourceId))
 	util.Check(err)
 	return result, err
