@@ -1,4 +1,4 @@
-package controller
+package crud
 
 import (
 	"log"
@@ -7,13 +7,13 @@ import (
 	util "github.com/polyglot-chameleon/goutil"
 )
 
-var controller Controller
+var controller CRUD
 var newPost Resource
 
 func init() {
 	util.LoadDotEnv(".env.test")
 
-	controller = Controller{}
+	controller = CRUD{}
 
 	if err := controller.Connect(); err != nil {
 		log.Fatal(err)

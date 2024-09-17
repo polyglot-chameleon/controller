@@ -1,4 +1,4 @@
-module github.com/polyglot-chameleon/controller
+module github.com/polyglot-chameleon/gocrud
 
 go 1.23.0
 

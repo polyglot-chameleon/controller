@@ -1,4 +1,4 @@
-package controller
+package crud
 
 import (
 	"database/sql"
