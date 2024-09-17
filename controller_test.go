@@ -21,6 +21,10 @@ func init() {
 	newPost = Resource{Title: "NewTestPostTitle", Body: "NewTestPostBody"}
 }
 
+func TestClone(t *testing.T) {
+	controller.CloneModel()
+}
+
 func TestCreate(t *testing.T) {
 	res, err := controller.Create(newPost)
 
